@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Stimmcoach"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Stimmcoach</title>
+<style>
+:root{--bg:#0b0e1a;--card:#151a2e;--tx:#eef0fa;--mu:#8f98bd;--ac:#7c9cff;--ok:#43d39e;--warn:#ffb454;--bad:#ff6b7a;--ln:#262c4a;--gold:#e8b04a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5fc;--card:#fff;--tx:#161a2e;--mu:#5a6385;--ac:#3b5bdb;--ok:#0f9d6b;--warn:#c77700;--bad:#d6293e;--ln:#dde1f0;--gold:#b7791f;color-scheme:light}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 -apple-system,system-ui,sans-serif}
+body{max-width:640px;margin:0 auto;padding:10px 12px 40px}
+.m{font-family:ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;font-size:11px;color:var(--mu)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}header b{font:700 15px ui-monospace,Menlo,monospace;letter-spacing:.14em}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px;margin:10px 0}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:9px 12px}
+button.pri{background:var(--ac);color:#fff;border-color:transparent;font-weight:600;width:100%;padding:12px}
+canvas{width:100%;display:block;border-radius:12px}
+#roll{height:250px;background:var(--card);border:1px solid var(--ln)}
+nav{display:flex;gap:6px;margin:10px 0}nav button{flex:1;padding:8px 2px;font-size:13px}nav button.on{background:var(--ac);color:#fff;border-color:transparent}
+.tab{display:none}.tab.on{display:block}
+#coach{font-weight:600;min-height:3em}
+.g{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;align-items:baseline}
+#f0{font:600 34px ui-monospace,Menlo,monospace;color:var(--gold)}#f0 small{font-size:13px;color:var(--mu)}
+.v{font:600 17px ui-monospace,Menlo,monospace}
+#vc{display:inline-block;border:1.5px solid var(--mu);color:var(--mu);border-radius:99px;padding:2px 12px;font:600 12px ui-monospace,Menlo,monospace}#vc.on{border-color:var(--gold);color:var(--gold)}
+#vw{font:300 34px Georgia,serif;color:var(--ok)}
+.cb{position:relative;height:8px;background:var(--ln);border-radius:4px;margin:6px 0}.cb:after{content:"";position:absolute;left:50%;top:-3px;height:14px;width:2px;background:var(--mu)}#mk{position:absolute;top:-4px;width:6px;height:16px;border-radius:3px;background:var(--gold);left:50%;transform:translateX(-50%)}
+select{font:inherit;background:var(--card);color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:8px}
+.ex{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--ln)}.ex:first-of-type{border:0}.ex p{margin:2px 0 0;color:var(--mu);font-size:13px}
+.bar{position:relative;height:24px;background:var(--ln);border-radius:6px;margin:4px 0;overflow:hidden}.bar i{position:absolute;inset:0 auto 0 0}.bar span{position:relative;padding:0 8px;line-height:24px;font-size:13px;color:#fff;text-shadow:0 0 3px #000}
+details{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin:8px 0}summary{font-weight:600}details p,details li{color:var(--tx)}
+#kb{position:relative;height:110px;margin:8px 0}#kb button.w{position:absolute;top:0;bottom:0;background:#f4f4f8;color:#222;border:1px solid #999;border-radius:0 0 6px 6px;padding:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}#kb button.k{position:absolute;top:0;height:62%;width:8%;background:#15151c;border:1px solid #000;border-radius:0 0 4px 4px;padding:0;z-index:2}
+.bars{display:flex;align-items:flex-end;gap:4px;height:90px}.bars div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:3px}
+</style></head><body>
+<header><b>STIMMCOACH</b><span class="m" id="st">Mikro aus</span></header>
+<button class="pri" id="mic">● Mikrofon starten</button>
+<button id="fl" style="width:100%;margin-top:8px">📁 Aufnahme analysieren (Sprachmemo / Audiodatei)</button><input type="file" id="fi" accept="audio/*,video/*" hidden>
+<canvas id="roll" style="margin-top:10px"></canvas>
+<div class="card" id="coach">Starte das Mikrofon und sing einen Ton – die Linie zeigt live deine Tonhöhe. Höher = weiter oben.</div>
+<div class="card"><div class="m">Phrasen-Feedback <label style="float:right;text-transform:none"><input type="checkbox" id="spk"> Sprachausgabe</label></div><div id="fb" style="margin-top:6px">Nach jeder Phrase (kurze Pause) bekommst du hier ehrliches Feedback zu Intonation, Stabilität, Einsatz und Atem. Ich höre nur Tonhöhe, Pegel und Timing – Klangfarbe und Stimmgesundheit beurteile ich nicht. Bei Schmerz oder Kratzen sofort stoppen.</div></div>
+<nav><button data-t="live" class="on">Live</button><button data-t="ueb">Üben</button><button data-t="ler">Lernen</button><button data-t="pro">Fortschritt</button></nav>
+
+<section class="tab on" id="live">
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span id="vc">○ STILL</span><span class="m">Pitch · Formanten</span></div>
+<div class="g" style="margin-top:8px"><span class="m">F0</span><span id="f0">–<small> Hz</small></span>
+<span class="m">Cent</span><div class="cb"><i id="mk"></i></div>
+<span class="m">F1</span><span class="v" id="f1">–</span><span class="m">F2</span><span class="v" id="f2">–</span><span class="m">F3</span><span class="v" id="f3">–</span>
+<span class="m">Level</span><span class="v" id="lv">–</span><span class="m">Vokal</span><span id="vw">–</span></div>
+<p class="m" style="margin:8px 0 0;text-transform:none">Formanten sind eine Schätzung (bei hohen Tönen ungenau). Vokal = nächstliegender deutscher Vokal.</p></div>
+<div class="card"><div class="m" style="margin-bottom:4px">Stimmlippen · Draufsicht (verlangsamt)</div><canvas id="folds" style="height:190px"></canvas><div class="m" style="margin:6px 0 2px">Glottis-Öffnung über einen Zyklus</div><canvas id="glot" style="height:60px"></canvas></div>
+</section>
+
+<section class="tab" id="ueb">
+<div class="card"><div class="m">Startton (bequem wählen, Oktave egal)</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px"><select id="root"></select><label><input type="checkbox" id="tone" checked> Ton vorspielen</label></div>
+<p class="m" style="text-transform:none;margin:8px 0 0">Tipp: Kopfhörer nutzen, damit der Vorspielton nicht ins Mikro geht.</p></div>
+<div class="card" id="exl"></div><div id="res"></div>
+</section>
+
+<section class="tab" id="ler">
+<details open><summary>1 · Klaviatur &amp; Notennamen</summary>
+<p>Tippe eine Taste: du hörst den Ton und siehst ihn im Notensystem. Reihenfolge: C D E F G A H, dann wieder C (= eine Oktave). Das deutsche „H“ heißt international „B“, unser „B“ ist ein Halbton tiefer.</p><div id="kb"></div><div id="kn" class="m"></div><div id="staff"></div>
+<p>Dein Piano-Roll oben ist dasselbe wie Notenlinien: jede Zeile ist ein Halbton, höher = weiter oben.</p></details>
+<details><summary>2 · Halbton, Ganzton, Dur &amp; Moll</summary>
+<p>Halbton = nächste Taste (kleinster Schritt). Ganzton = zwei Halbtöne. Dur klingt hell: Ganz-Ganz-Halb-Ganz-Ganz-Ganz-Halb. Moll klingt dunkler: Ganz-Halb-Ganz-Ganz-Halb-Ganz-Ganz.</p>
+<button onclick="seq([0,2,4,5,7,9,11,12])">▶ C-Dur</button> <button onclick="seq([0,2,3,5,7,8,10,12])">▶ c-Moll</button></details>
+<details><summary>3 · Intervalle hören</summary><p>Ein Intervall ist der Abstand zweier Töne. Hör zu und sing nach – das trainiert Ohr und Stimme gleichzeitig.</p><div id="iv"></div></details>
+<details><summary>4 · Noten im System lesen</summary>
+<ul><li>5 Linien, im Violinschlüssel von unten: E G H D F („Es geht hurtig durch Feld“).</li><li>Zwischenräume von unten: F A C E.</li><li>Notenwerte: ganze (4 Schläge), halbe (2), Viertel (1), Achtel (½).</li><li>Vorzeichen: ♯ = Halbton höher, ♭ = Halbton tiefer.</li></ul></details>
+<details><summary>5 · Gesunde Stimme – Regeln</summary>
+<ul><li>Immer aufwärmen (5–10 Min): Summen, Lippenflattern, sanfte Sirenen.</li><li>Schmerz, Kratzen oder Heiserkeit = sofort stoppen.</li><li>Kurze Einheiten (10–20 Min) täglich schlagen eine lange pro Woche.</li><li>Viel Wasser, kein Räuspern, wenig Flüstern, genug Schlaf.</li><li>Kein Pressen: Höhe kommt aus Luftfluss und Entspannung, nicht aus Kraft.</li></ul>
+<p class="m" style="text-transform:none">Die App ergänzt dein Vocal Coaching, sie ersetzt es nicht.</p></details>
+</section>
+
+<section class="tab" id="pro">
+<div class="card" id="pr"></div>
+<details><summary>Als App auf den Home-Bildschirm (iPhone)</summary><p>Link in Safari öffnen (nicht in der Claude-Ansicht) → Teilen-Symbol → „Zum Home-Bildschirm“. Mikrofon beim ersten Start erlauben.</p></details>
+<button onclick="try{localStorage.removeItem('sc1')}catch(e){};prog()">Fortschritt zurücksetzen</button>
+</section>
+
+<script>
+const $=s=>document.querySelector(s),AC=window.AudioContext||window.webkitAudioContext;
+const NN=['C','Cis','D','Dis','E','F','Fis','G','Gis','A','B','H'];
+const nm=n=>NN[(n%12+12)%12]+(Math.floor(n/12)-1),f2m=f=>69+12*Math.log2(f/440),m2f=m=>440*2**((m-69)/12);
+const fold=(m,t)=>((m-t+6)%12+12)%12-6,gf=u=>u<.6?Math.sin(Math.PI*u/.6)**2:0;
+let src=null,ac,an,buf,stream,run=false,hist=[],vc=60,tc=60,ex=null,last=0,fm=[0,0,0],ph=0,lastTxt=0,fr=0;
+const cv=$('#roll');
+const col=()=>{const s=getComputedStyle(document.documentElement),g=k=>s.getPropertyValue(k).trim();return{card:g('--card'),tx:g('--tx'),mu:g('--mu'),ac:g('--ac'),ok:g('--ok'),warn:g('--warn'),bad:g('--bad'),ln:g('--ln'),gold:g('--gold')}};
+function sz(c){const w=c.clientWidth,h=c.clientHeight,d=devicePixelRatio||1;if(c.width!==Math.round(w*d)){c.width=Math.round(w*d);c.height=Math.round(h*d)}const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);return[x,w,h]}
+
+function pitch(b,sr){const n=b.length;let rms=0;for(let i=0;i<n;i++)rms+=b[i]*b[i];rms=Math.sqrt(rms/n);if(rms<.003)return{f:0,rms};
+const lo=Math.floor(sr/1000),hi=Math.floor(sr/70),half=n>>1,d=new Float32Array(hi+2);
+for(let t=1;t<=hi;t++){let s=0;for(let i=0;i<half;i++){const x=b[i]-b[i+t];s+=x*x}d[t]=s}
+const c=new Float32Array(hi+2);let acc=0;c[0]=1;for(let t=1;t<=hi;t++){acc+=d[t];c[t]=acc?d[t]*t/acc:1}
+let t=lo;while(t<hi){if(c[t]<.25){while(t+1<hi&&c[t+1]<c[t])t++;break}t++}
+if(t>=hi||c[t]>=.25)return{f:0,rms};
+const a=c[t-1],b2=c[t],e=c[t+1],den=a+e-2*b2,sh=den?(a-e)/(2*den):0;return{f:sr/(t+sh),rms}}
+
+function formants(b,sr){const k=Math.max(1,Math.round(sr/11025)),n=Math.floor(b.length/k),x=new Float32Array(n),fs=sr/k;
+for(let i=0;i<n;i++){let s=0;for(let j=0;j<k;j++)s+=b[i*k+j];x[i]=s/k}
+for(let i=n-1;i>0;i--)x[i]-=.97*x[i-1];
+for(let i=0;i<n;i++)x[i]*=.54-.46*Math.cos(2*Math.PI*i/(n-1));
+const P=12,r=new Float64Array(P+1);for(let l=0;l<=P;l++){let s=0;for(let i=l;i<n;i++)s+=x[i]*x[i-l];r[l]=s}
+if(r[0]<1e-9)return null;r[0]*=1.0001;
+let a=new Float64Array(P+1);a[0]=1;let e=r[0];
+for(let i=1;i<=P;i++){let s=r[i];for(let j=1;j<i;j++)s+=a[j]*r[i-j];const q=-s/e,t=a.slice();for(let j=1;j<i;j++)a[j]=t[j]+q*t[i-j];a[i]=q;e*=1-q*q}
+const env=[];for(let f=200;f<=4200;f+=25){const w=2*Math.PI*f/fs;let re=1,im=0;for(let j=1;j<=P;j++){re+=a[j]*Math.cos(j*w);im-=a[j]*Math.sin(j*w)}env.push([f,1/(re*re+im*im)])}
+const pk=[];for(let i=1;i<env.length-1;i++)if(env[i][1]>env[i-1][1]&&env[i][1]>=env[i+1][1])pk.push(env[i][0]);return pk.slice(0,3)}
+const VW=[['a',800,1300],['e',420,2100],['i',300,2300],['o',450,950],['u',320,800],['ä',650,1800],['ö',400,1500],['ü',300,1800]];
+const vowel=(a,b)=>VW.map(v=>[Math.hypot(Math.log(a/v[1]),Math.log(b/v[2])),v[0]]).sort((p,q)=>p[0]-q[0])[0][1];
+
+async function mic(){if(run){stop();return}
+try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});
+ac=ac||new AC();await ac.resume();const s=ac.createMediaStreamSource(stream);an=ac.createAnalyser();an.fftSize=4096;s.connect(an);buf=new Float32Array(4096);
+run=true;hist=[];last=performance.now();$('#mic').textContent='■ Mikrofon stoppen';$('#st').textContent='Mikro an';loop()}
+catch(e){$('#coach').textContent='Live-Mikro wird hier von iOS blockiert. Nimm dich mit der Sprachmemo-App auf und tippe oben auf „Aufnahme analysieren“.'}}
+function stop(){run=false;ex=null;const s0=src;src=null;try{s0&&s0.stop()}catch(e){}try{stream.getTracks().forEach(t=>t.stop())}catch(e){}$('#mic').textContent='● Mikrofon starten';$('#st').textContent='Mikro aus';folds(0,.55);glot(null);draw(performance.now())}
+$('#mic').onclick=mic;
+$('#fl').onclick=()=>$('#fi').click();
+$('#fi').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{ac=ac||new AC();await ac.resume();if(run)stop();$('#coach').textContent='Lade Aufnahme…';const b=await ac.decodeAudioData(await f.arrayBuffer());an=ac.createAnalyser();an.fftSize=4096;buf=new Float32Array(4096);const s=ac.createBufferSource();s.buffer=b;s.connect(an);an.connect(ac.destination);src=s;s.onended=()=>{if(src===s)stop()};run=true;hist=[];last=performance.now();$('#st').textContent='Aufnahme';$('#mic').textContent='■ Stopp';s.start();loop()}catch(err){$('#coach').textContent='Datei konnte nicht gelesen werden. Versuche eine Sprachmemo (m4a) oder MP3.'}e.target.value=''};
+
+function loop(){if(!run)return;const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
+an.getFloatTimeDomainData(buf);const r=pitch(buf,ac.sampleRate),m=r.f?f2m(r.f):null,db=r.rms>0?20*Math.log10(r.rms):-99;
+hist.push({t:now,m});while(hist[0]&&now-hist[0].t>6200)hist.shift();
+if(m===null)fm=[0,0,0];else if(++fr%3==0){const p=formants(buf,ac.sampleRate);if(p)p.forEach((v,i)=>fm[i]=fm[i]?fm[i]*.7+v*.3:v)}
+if(ex)exStep(now,m);else phrase(m,db,now);
+ph=(ph+dt*(r.f||0)/40)%1;folds(r.f,m===null?.55:gf(ph));glot(m===null?null:ph);ui(m,db,now);draw(now);requestAnimationFrame(loop)}
+
+let ps=null,lastV=0,mute=0,flog=[];
+function phrase(m,db,now){if('speechSynthesis' in window&&(speechSynthesis.speaking||now<mute)){ps=null;return}
+if(m!==null){lastV=now;if(!ps)ps={m:[],t:[],d:[]};ps.m.push(m);ps.t.push(now);ps.d.push(db)}
+else if(ps&&now-lastV>700){const p=ps;ps=null;if(p.m.length>25)analyze(p)}}
+function analyze(p){const n=p.m.length,dur=(p.t[n-1]-p.t[0])/1000;if(dur<.9)return;
+const s=[...p.m].sort((a,b)=>a-b),p10=s[Math.floor(n*.1)],p90=s[Math.floor(n*.9)],held=p90-p10<1.6,sum=a=>a.reduce((x,y)=>x+y,0);
+const st=[];for(let i=2;i<n;i++)if(Math.abs(p.m[i]-p.m[i-1])<.2&&Math.abs(p.m[i]-p.m[i-2])<.3)st.push(p.m[i]);
+let tune=null,bias=0;if(st.length>=10){const c=st.map(v=>(v-Math.round(v))*100);tune=Math.round(100*c.filter(v=>Math.abs(v)<25).length/c.length);bias=Math.round(sum(c)/c.length)}
+let drift=0,sc=0,wob=0,rate=0;
+if(held&&n>=40){const k=Math.floor(n*.15),core=p.m.slice(k),c=core.length,th=Math.floor(c/3),a=sum(core.slice(0,th))/th,b=sum(core.slice(c-th))/th;drift=Math.round((b-a)*100);
+const ol=Math.min(8,k+4);sc=Math.round((sum(p.m.slice(0,ol))/ol-a)*100);
+const mu=sum(core)/c,sl=(b-a)/(c-th),res=core.map((v,i)=>(v-mu-sl*(i-c/2))*100);wob=Math.round(Math.sqrt(sum(res.map(v=>v*v))/c));
+let z=0;for(let i=1;i<c;i++)if(res[i]*res[i-1]<0)z++;rate=z/2/((p.t[n-1]-p.t[k])/1000)}
+const lv=Math.round(sum(p.d)/n),good=[],iss=[];
+if(tune!==null){if(tune>=85)good.push('Intonation sauber ('+tune+'% der stabilen Töne im Zielbereich)');
+else if(bias>15)iss.push([100-tune,'Du liegst im Schnitt '+bias+' ct zu hoch.','Meist Druck oder Anspannung: Gähnraum öffnen, Ton weicher beginnen.']);
+else if(bias<-15)iss.push([100-tune,'Du liegst im Schnitt '+(-bias)+' ct zu tief.','Meist zu wenig Atemfluss: aufrecht stehen, Rippen weit, Vokal heller (i/e).']);
+else iss.push([100-tune,'Nur '+tune+'% der Töne sitzen sauber, die Abweichung schwankt.','Hör den Ton vorher innerlich, summ ihn erst auf „Mm“, dann öffne.'])}
+if(held){if(drift<-25)iss.push([Math.abs(drift)+10,'Der Ton sackt gegen Ende um '+(-drift)+' ct ab.','Der Atem lässt nach: Rippen länger weit halten, das Ende bewusst tragen.']);
+else if(drift>25)iss.push([drift+10,'Der Ton kriecht um '+drift+' ct nach oben.','Druck baut sich auf: gleiche Lautstärke halten, Hals locker lassen.']);
+if(Math.abs(sc)>40)iss.push([Math.abs(sc),sc<0?'Du setzt zu tief an und ziehst den Ton hoch ('+(-sc)+' ct).':'Du setzt zu hoch an (+'+sc+' ct).','Ton vorher innerlich hören, dann direkt einsetzen statt anschleifen.']);
+if(rate>=4.5&&rate<=7.5&&wob>=12&&wob<=45)good.push('gleichmäßiges, natürliches Vibrato ('+rate.toFixed(1)+' Hz)');
+else if(wob>30)iss.push([wob,'Der Ton wackelt unregelmäßig (±'+wob+' ct).','Atemfluss ungleichmäßig: übe 10 Sek. gleichmäßiges „Sss“, dann denselben Fluss auf „Mm“.']);
+else if(wob<=15&&Math.abs(drift)<=25)good.push('ruhiger, stabiler Ton (±'+wob+' ct)')}
+if(lv<-42)iss.push([30,'Der Pegel ist sehr niedrig ('+lv+' dB): eher hauchig oder zu weit weg.','Mikro 10–20 cm vor den Mund, mehr Atemfluss, nicht drücken.']);
+if(lv>-8)iss.push([30,'Der Pegel ist sehr hoch ('+lv+' dB), das kann übersteuern.','Mehr Abstand zum Mikro; Lautstärke nicht mit Druck erzeugen.']);
+iss.sort((a,b)=>b[0]-a[0]);
+let h='<b>'+dur.toFixed(1)+' s'+(held?' · gehaltener Ton':'')+(tune!==null?' · '+tune+'% sauber':'')+'</b>';
+if(tune===null)h+='<br>Zu wenig stabile Töne (Gleiten oder Unruhe): Intonation nicht bewertbar.';
+h+='<br>'+(good.length?'✔ '+good.join('; ')+'.':'Noch keine klare Stärke messbar.');
+if(iss[0])h+='<br><b>Wichtigster Hebel:</b> '+iss[0][1]+' <i>'+iss[0][2]+'</i>';
+if(iss[1])h+='<br>Danach: '+iss[1][1];
+if(!iss.length)h+='<br>Kein klarer Schwachpunkt – nächste Stufe: höherer Startton oder Intervallsprünge.';
+flog.unshift(h);flog=flog.slice(0,4);$('#fb').innerHTML=flog.map((x,i)=>`<div style="padding:8px 0;${i?'opacity:.65;border-top:1px solid var(--ln)':''}">${x}</div>`).join('');
+if($('#spk').checked&&'speechSynthesis' in window){const u=new SpeechSynthesisUtterance(iss[0]?iss[0][1]+' '+iss[0][2]:'Sauber gesungen. '+(good[0]||''));u.lang='de-DE';u.onend=()=>{mute=performance.now()+800};speechSynthesis.speak(u)}}
+function ui(m,db,now){const v=m!==null;$('#vc').className=v?'on':'';$('#vc').textContent=v?'● VOICED':'○ STILL';$('#lv').textContent=db>-90?Math.round(db)+' dB':'–';
+if(v){const n=Math.round(m),ct=Math.round((m-n)*100);tc=n;$('#f0').innerHTML=Math.round(m2f(m))+'<small> Hz · '+nm(n)+' ('+(ct>0?'+':'')+ct+' ct)</small>';$('#mk').style.left=(50+ct)+'%'}else $('#f0').innerHTML='–<small> Hz</small>';
+['f1','f2','f3'].forEach((id,i)=>$('#'+id).textContent=fm[i]?Math.round(fm[i])+' Hz':'–');
+$('#vw').textContent=fm[0]&&fm[1]?'/'+vowel(fm[0],fm[1])+'/':'–';
+if(now-lastTxt>250){lastTxt=now;coachTxt(m,db,now)}}
+
+function coachTxt(m,db,now){let t;
+if(ex){if(now<ex.t0)t='Gleich geht\'s los – atme tief in die Flanken ein, Schultern locker.';else{const s=cur(now);if(!s)return;
+ if(m===null)t='Ziel '+nm(s.m)+' – sing los, ich höre noch keinen klaren Ton.';else{const d=fold(m,s.m)*100;t=Math.abs(d)<25?'✔ '+nm(s.m)+' sitzt!':d>0?'Ziel '+nm(s.m)+': '+Math.round(d)+' ct zu hoch – lockerer, weniger Druck.':'Ziel '+nm(s.m)+': '+Math.round(-d)+' ct zu tief – mehr Atemfluss, Ton sanft anheben.'}}}
+else if(m===null)t=db>-50?'Ich höre Geräusch, aber keinen klaren Ton. Sing auf „Mm“ oder „Na“.':'Sing einen Ton – ich höre live zu.';
+else{const p=hist.filter(h=>h.m!==null&&now-h.t<500).map(h=>h.m),mu=p.reduce((a,b)=>a+b,0)/p.length,sd=Math.sqrt(p.reduce((a,b)=>a+(b-mu)**2,0)/p.length)*100,ct=(m-Math.round(m))*100;
+ t=db<-45?'Sehr leise: mehr Atemfluss, aber nicht pressen.':sd>50?'Der Ton wackelt stark – weniger drücken, gleichmäßig ausatmen.':Math.abs(ct)>25?(ct>0?'Etwas zu hoch zur nächsten Note – entspannen.':'Etwas zu tief zur nächsten Note – mehr Luftfluss.'):sd<20?'Ruhig und sauber – so soll sich ein stabiler Ton anfühlen.':'Gut – halte den Ton weiter ruhig.'}
+$('#coach').textContent=t}
+
+function draw(now){const[x,w,h]=sz(cv),K=col();let lo,hi;if(ex){lo=ex.lo;hi=ex.hi}else{vc+=(tc-vc)*.05;lo=vc-9;hi=vc+9}
+const ry=h/(hi-lo+1),Y=m=>h-(m-lo+.5)*ry;
+for(let n=Math.ceil(lo);n<=Math.floor(hi);n++){const y=Y(n),pc=(n%12+12)%12,bk=[1,3,6,8,10].includes(pc);
+ if(bk){x.globalAlpha=.35;x.fillStyle=K.ln;x.fillRect(0,y-ry/2,w,ry);x.globalAlpha=1}
+ x.strokeStyle=K.ln;x.beginPath();x.moveTo(0,y-ry/2);x.lineTo(w,y-ry/2);x.stroke();
+ if(!bk){x.font=(pc?'10px':'bold 11px')+' ui-monospace,Menlo,monospace';x.fillStyle=pc?K.mu:K.tx;x.fillText(nm(n),4,y+4)}}
+const nx=w*.7,pp=(nx-44)/6000;
+if(ex){for(const s of ex.steps){const x1=nx+(s.ts-now)*pp,x2=nx+(s.te-now)*pp;if(x2<44||x1>w)continue;
+ x.globalAlpha=s.done?.8:.35;x.fillStyle=s.done?(s.sc>.7?K.ok:s.sc>.4?K.warn:K.bad):K.ac;x.fillRect(Math.max(44,x1),Y(s.m)-ry*.4,x2-Math.max(44,x1)-2,ry*.8);x.globalAlpha=1}
+ if(now<ex.t0){x.fillStyle=K.tx;x.font='bold 14px sans-serif';x.fillText('Gleich…',nx-20,18)}}
+x.setLineDash([4,4]);x.strokeStyle=K.mu;x.beginPath();x.moveTo(nx,0);x.lineTo(nx,h);x.stroke();x.setLineDash([]);
+x.strokeStyle=K.gold;x.lineWidth=3;x.lineCap='round';x.lineJoin='round';let pen=false,lx,ly;
+for(const p of hist){if(p.m===null){pen=false;continue}const m=ex?p.m+12*Math.round((ex.mid-p.m)/12):p.m,px=nx-(now-p.t)*pp,py=Y(m);
+ if(px<44){pen=false;continue}if(pen){x.beginPath();x.moveTo(lx,ly);x.lineTo(px,py);x.stroke()}pen=true;lx=px;ly=py}
+if(pen){x.fillStyle=K.gold;x.beginPath();x.arc(lx,ly,5,0,7);x.fill()}x.lineWidth=1;
+const lp=hist[hist.length-1];if(lp&&lp.m!==null){const n=Math.round(lp.m),ct=Math.round((lp.m-n)*100);x.fillStyle=K.gold;x.font='bold 22px ui-monospace,Menlo,monospace';x.fillText(nm(n),nx+10,26);x.font='11px ui-monospace,Menlo,monospace';x.fillStyle=K.mu;x.fillText((ct>0?'+':'')+ct+' ct · '+Math.round(m2f(lp.m))+' Hz',nx+10,42)}}
+
+function folds(f0,g){const[x,w,h]=sz($('#folds')),cx=w/2,cy=h/2,R=Math.min(w,h)*.46;
+const gr=x.createRadialGradient(cx,cy,R*.2,cx,cy,R);gr.addColorStop(0,'#7a2a3c');gr.addColorStop(1,'#4a1424');x.fillStyle=gr;x.beginPath();x.arc(cx,cy,R,0,7);x.fill();
+const gap=2+g*R*.22,ry=R*.62,rx=R*.34;x.fillStyle='#f1e6e6';
+[-1,1].forEach(s=>{x.beginPath();x.ellipse(cx+s*(gap/2+rx*.9),cy-R*.02,rx,ry,0,0,7);x.fill()});
+x.fillStyle='#0a0508';x.beginPath();x.ellipse(cx,cy-R*.02,gap/2,ry*.92,0,0,7);x.fill();
+x.fillStyle='#c2607a';[-1,1].forEach(s=>{x.beginPath();x.arc(cx+s*R*.15,cy+R*.66,R*.14,0,7);x.fill()});
+const K=col();x.fillStyle=K.mu;x.font='11px ui-monospace,Menlo,monospace';x.fillText('front',w-48,cy-R*.6);x.fillText('back',w-42,cy+R*.8);x.fillText(f0?'vibrating':'open',6,cy);x.fillText(f0?Math.round(f0)+' cycles/s':'',6,cy+14)}
+function glot(p){const[x,w,h]=sz($('#glot')),K=col();x.fillStyle=K.gold;x.globalAlpha=.25;x.beginPath();x.moveTo(0,h-4);for(let i=0;i<=w;i+=2)x.lineTo(i,h-4-gf(i/w)*(h-12));x.lineTo(w,h-4);x.fill();x.globalAlpha=1;
+x.strokeStyle=K.gold;x.beginPath();for(let i=0;i<=w;i+=2){const y=h-4-gf(i/w)*(h-12);i?x.lineTo(i,y):x.moveTo(i,y)}x.stroke();
+if(p!==null){x.strokeStyle=K.tx;x.beginPath();x.moveTo(p*w,0);x.lineTo(p*w,h);x.stroke()}}
+
+const EX=[
+{n:'Ton halten',d:'Einen Ton 4 Sek. ruhig halten – Stabilität & Atemfluss.',s:[[0,4]]},
+{n:'Halbtonschritte',d:'Feines Hören: Ton, Halbton hoch, wieder zurück.',s:[0,1,2,1,0].map(o=>[o,2.4])},
+{n:'Terz-Wippe',d:'Sprung auf und ab, ohne zu schieben.',s:[0,4,0,4].map(o=>[o,2.4])},
+{n:'5-Ton-Leiter',d:'Die Grundübung jedes Coachings: auf und ab.',s:[0,2,4,5,7,5,4,2,0].map(o=>[o,2.2])},
+{n:'Dreiklang',d:'Grundton – Terz – Quinte und zurück.',s:[0,4,7,4,0].map(o=>[o,2.4])},
+{n:'Quint-Sprung',d:'Größerer Sprung: Ton vorher innerlich hören.',s:[0,7,0,7].map(o=>[o,2.4])}];
+const WARM=[['Warm-up: Lippenflattern + Sirene','2 Min: Lippen flattern lassen und dabei sanft von tief nach hoch und zurück gleiten. Schau im Piano-Roll, ob die Linie glatt gleitet.'],['Summen auf „Mm“','1 Min: bequemer Ton, Lippen locker, Kiefer entspannt. Spüre Vibration an Lippen/Nase.'],['Vokalwechsel auf einem Ton','Einen Ton halten und langsam „i – e – a – o – u“. Beobachte F1/F2 im Live-Tab: die Werte ändern sich, der Ton bleibt gleich.']];
+$('#root').innerHTML=Array.from({length:25},(_,i)=>43+i).map(n=>`<option value="${n}"${n==57?' selected':''}>${nm(n)}</option>`).join('');
+$('#exl').innerHTML='<div class="m">Zieltöne – Live-Bewertung</div>'+EX.map((e,i)=>`<div class="ex"><div><b>${e.n}</b><p>${e.d}</p></div><button onclick="startEx(${i})">Start</button></div>`).join('')+'<div class="m" style="margin-top:12px">Freie Aufwärm-Übungen</div>'+WARM.map(w=>`<div class="ex"><div><b>${w[0]}</b><p>${w[1]}</p></div></div>`).join('');
+
+async function startEx(i){if(!run)await mic();if(!run)return;const e=EX[i],root=+$('#root').value,now=performance.now();let t=now+1800;
+const steps=e.s.map(([o,d])=>{const s={m:root+o,ts:t,te:t+d*1000,fr:0,tot:0,vn:0,es:0};t+=d*1000;return s});
+let lo=Math.min(...steps.map(s=>s.m))-4,hi=Math.max(...steps.map(s=>s.m))+4;if(hi-lo<14){const c=(hi+lo)/2;lo=c-7;hi=c+7}
+ex={n:e.n,steps,lo,hi,mid:(lo+hi)/2,t0:now+1800,end:t+300};$('#res').innerHTML='';window.scrollTo({top:0,behavior:'smooth'})}
+const cur=now=>ex.steps.find(s=>now>=s.ts&&now<s.te);
+function exStep(now,m){const tn=$('#tone').checked;for(const s of ex.steps){if(now>=s.ts&&now<s.te){if(!s.pl){s.pl=1;if(tn)beep(m2f(s.m),.9)}
+ if(now>s.ts+(tn?1100:500)){s.tot++;if(m!==null){const d=fold(m,s.m);s.vn++;s.es+=d*100;if(Math.abs(d)<.4)s.fr++}}}
+ else if(now>=s.te&&!s.done&&s.pl){s.done=1;s.sc=s.tot?s.fr/s.tot:0}}
+if(now>ex.end)finish()}
+function finish(){const st=ex.steps;st.forEach(s=>{if(s.sc===undefined)s.sc=s.tot?s.fr/s.tot:0;s.done=1});
+const avg=Math.round(100*st.reduce((a,s)=>a+s.sc,0)/st.length),vn=st.reduce((a,s)=>a+s.vn,0),bias=vn?Math.round(st.reduce((a,s)=>a+s.es,0)/vn):0;
+const adv=[avg>=80?'Stark! Nächstes Mal: anderer Startton oder eine schwerere Übung.':avg>=50?'Gute Basis. Wiederhole mit Kopfhörern; summ jeden Ton erst auf „Mm“, dann öffne auf „Na“.':'Das ist Training, kein Urteil: Spiel den Ton mehrfach vor, summ ihn erst leise und achte auf lockeren Kiefer.'];
+if(bias>20)adv.push('Du singst im Schnitt zu hoch (+'+bias+' ct): meist Druck im Hals. Gähnraum, weicher Einsatz, weniger Kraft.');
+if(bias<-20)adv.push('Du singst im Schnitt zu tief ('+bias+' ct): meist zu wenig Atemfluss/Stütze. Aufrecht, Rippen weit, Ton „nach vorn“ denken.');
+const bad=[...new Set(st.filter(s=>s.sc<.4).map(s=>nm(s.m)))];if(bad.length)adv.push('Schwierig waren: '+bad.join(', ')+'. Übe genau diese Töne einzeln mit „Ton halten“.');
+$('#res').innerHTML=`<div class="card"><b>${ex.n}: ${avg}% getroffen</b><div class="m" style="margin:6px 0">Treffer = innerhalb ±40 ct, Oktave egal</div>`+st.map(s=>`<div class="bar"><i style="width:${Math.round(s.sc*100)}%;background:${s.sc>.7?'var(--ok)':s.sc>.4?'var(--warn)':'var(--bad)'}"></i><span>${nm(s.m)} · ${Math.round(s.sc*100)}%</span></div>`).join('')+adv.map(a=>`<p>${a}</p>`).join('')+'</div>';
+save({d:new Date().toISOString().slice(0,10),n:ex.n,s:avg,b:bias});$('#coach').textContent='Fertig: '+avg+'% – Details unter „Üben“.';ex=null;prog()}
+
+function beep(f,d){ac=ac||new AC();ac.resume();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.25,t+.03);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(t+d+.05)}
+const seq=(os,r=60,gap=.55)=>os.forEach((o,i)=>setTimeout(()=>beep(m2f(r+o),.6),i*gap*1000));
+
+const LS=()=>{try{return JSON.parse(localStorage.getItem('sc1')||'[]')}catch(e){return[]}};
+function save(r){try{const a=LS();a.push(r);localStorage.setItem('sc1',JSON.stringify(a.slice(-200)))}catch(e){}}
+function prog(){const a=LS(),el=$('#pr');if(!a.length){el.innerHTML='Noch keine Übungen. Starte unter „Üben“ – hier siehst du ehrlich, wie du dich entwickelst.';return}
+const days=new Set(a.map(r=>r.d)).size,l=a.slice(-12),avg=x=>x.reduce((s,r)=>s+r.s,0)/x.length,p=a.slice(-10,-5),q=a.slice(-5);
+const tr=a.length>=6?Math.round(avg(q)-avg(p.length?p:a.slice(0,-5))):null;
+el.innerHTML=`<b>${a.length} Übungen an ${days} Tagen</b><div class="bars" style="margin:10px 0">${l.map(r=>`<div style="height:${Math.max(3,r.s)}%" title="${r.n}"></div>`).join('')}</div><div class="m" style="text-transform:none">Letzte ${l.length} Ergebnisse in %. Bestwert: ${Math.max(...a.map(r=>r.s))}%.${tr!==null?' Trend: '+(tr>=0?'+':'')+tr+' Punkte.':''} Dranbleiben: lieber täglich 10 Min.</div>`}
+
+const WS={0:0,1:0,2:1,3:1,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6},KN='CDEFGAH';
+function key(s){beep(m2f(60+s),.9);const st=WS[s],y=70-(st-2)*5,sh=[1,3,6,8,10].includes(s);$('#kn').textContent=NN[s]+(sh?' (schwarze Taste = Halbton)':'');
+$('#staff').innerHTML=`<svg viewBox="0 0 200 100" style="width:100%;max-width:300px"><g stroke="currentColor" opacity=".6">${[30,40,50,60,70].map(v=>`<line x1="5" x2="195" y1="${v}" y2="${v}"/>`).join('')}${st==0?'<line x1="92" x2="128" y1="80" y2="80"/>':''}</g><text x="8" y="68" font-size="54" fill="currentColor">𝄞</text><ellipse cx="110" cy="${y}" rx="7" ry="5" fill="var(--gold)"/><line x1="117" x2="117" y1="${y}" y2="${y-26}" stroke="var(--gold)" stroke-width="1.5"/>${sh?`<text x="90" y="${y+4}" font-size="14" fill="var(--gold)">♯</text>`:''}</svg>`}
+$('#kb').innerHTML=[0,2,4,5,7,9,11].map((s,i)=>`<button class="w" style="left:${i*100/7}%;width:${100/7}%" onclick="key(${s})">${KN[i]}</button>`).join('')+[[1,0],[3,1],[6,3],[8,4],[10,5]].map(([s,i])=>`<button class="k" style="left:${(i+1)*100/7-4}%" onclick="key(${s})"></button>`).join('');
+$('#iv').innerHTML=[['Sekunde',2,'„Alle meine Entchen“ (C–D)'],['Große Terz',4,'Kuckucksruf (fallend)'],['Quarte',5,'„O Tannenbaum“'],['Quinte',7,'„Morgen kommt der Weihnachtsmann“'],['Oktave',12,'„Somewhere over the rainbow“']].map(([n,o,h])=>`<div class="ex"><div><b>${n}</b><p>${h}</p></div><button onclick="seq([0,${o}],60,.8)">▶</button></div>`).join('');
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.tab').forEach(e=>e.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');if(b.dataset.t=='live'){folds(0,.55);glot(null)}});
+prog();draw(performance.now());folds(0,.55);glot(null);addEventListener('resize',()=>{if(!run){draw(performance.now());folds(0,.55);glot(null)}});
+</script></body></html>
