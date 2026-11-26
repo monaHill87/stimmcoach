@@ -8,17 +8,17 @@
 :root{--bg:#0b0e1a;--card:#151a2e;--tx:#eef0fa;--mu:#8f98bd;--ac:#7c9cff;--ok:#43d39e;--warn:#ffb454;--bad:#ff6b7a;--ln:#262c4a;--gold:#e8b04a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5fc;--card:#fff;--tx:#161a2e;--mu:#5a6385;--ac:#3b5bdb;--ok:#0f9d6b;--warn:#c77700;--bad:#d6293e;--ln:#dde1f0;--gold:#b7791f;color-scheme:light}}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 -apple-system,system-ui,sans-serif}
-body{max-width:640px;margin:0 auto;padding:10px 12px 40px}
+body{max-width:640px;margin:0 auto;padding:0 12px 100px}#top{position:sticky;top:0;z-index:10;background:var(--bg);padding:6px 0 2px}#top .card{margin:6px 0;padding:8px 12px}.br{width:70px;height:70px;border-radius:50%;background:var(--ac);opacity:.5;margin:14px auto;animation:br 14s ease-in-out infinite}@keyframes br{0%{transform:scale(1)}29%{transform:scale(1.7)}100%{transform:scale(1)}}
 .m{font-family:ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;font-size:11px;color:var(--mu)}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}header b{font:700 15px ui-monospace,Menlo,monospace;letter-spacing:.14em}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px;margin:10px 0}
 button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:9px 12px}
 button.pri{background:var(--ac);color:#fff;border-color:transparent;font-weight:600;width:100%;padding:12px}
 canvas{width:100%;display:block;border-radius:12px}
-#roll{height:250px;background:var(--card);border:1px solid var(--ln)}
-nav{display:flex;gap:6px;margin:10px 0}nav button{flex:1;padding:8px 2px;font-size:13px}nav button.on{background:var(--ac);color:#fff;border-color:transparent}
+#roll{height:170px;background:var(--card);border:1px solid var(--ln)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--ln);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:20}nav button{flex:1;border:0;background:none;font-size:11px;padding:2px 0;color:var(--mu)}nav button b{display:block;font-size:21px;font-weight:400}nav button.on{color:var(--ac);font-weight:600}
 .tab{display:none}.tab.on{display:block}
-#coach{font-weight:600;min-height:3em}
+#coach{font-weight:600;min-height:2.6em;font-size:14px}
 .g{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;align-items:baseline}
 #f0{font:600 34px ui-monospace,Menlo,monospace;color:var(--gold)}#f0 small{font-size:13px;color:var(--mu)}
 .v{font:600 17px ui-monospace,Menlo,monospace}
@@ -32,30 +32,32 @@ details{background:var(--card);border:1px solid var(--ln);border-radius:12px;pad
 #kb{position:relative;height:110px;margin:8px 0}#kb button.w{position:absolute;top:0;bottom:0;background:#f4f4f8;color:#222;border:1px solid #999;border-radius:0 0 6px 6px;padding:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}#kb button.k{position:absolute;top:0;height:62%;width:8%;background:#15151c;border:1px solid #000;border-radius:0 0 4px 4px;padding:0;z-index:2}
 .bars{display:flex;align-items:flex-end;gap:4px;height:90px}.bars div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:3px}
 </style></head><body>
-<header><b>STIMMCOACH</b><span class="m" id="st">Mikro aus</span></header>
+<div id="top"><header><b>STIMMCOACH</b><span class="m" id="st">Mikro aus</span></header>
 <button class="pri" id="mic">● Mikrofon starten</button>
 <button id="fl" style="width:100%;margin-top:8px">📁 Aufnahme analysieren (Sprachmemo / Audiodatei)</button><input type="file" id="fi" accept="audio/*,video/*" hidden>
 <canvas id="roll" style="margin-top:10px"></canvas>
-<div class="card" id="coach">Starte das Mikrofon und sing einen Ton – die Linie zeigt live deine Tonhöhe. Höher = weiter oben.</div>
+<div class="card" id="coach">Starte das Mikrofon und sing einen Ton – die Linie zeigt live deine Tonhöhe. Höher = weiter oben.</div></div>
 <div class="card"><div class="m">Phrasen-Feedback <label style="float:right;text-transform:none"><input type="checkbox" id="spk"> Sprachausgabe</label></div><div id="fb" style="margin-top:6px">Nach jeder Phrase (kurze Pause) bekommst du hier ehrliches Feedback zu Intonation, Stabilität, Einsatz und Atem. Ich höre nur Tonhöhe, Pegel und Timing – Klangfarbe und Stimmgesundheit beurteile ich nicht. Bei Schmerz oder Kratzen sofort stoppen.</div></div>
-<nav><button data-t="live" class="on">Live</button><button data-t="ueb">Üben</button><button data-t="lied">Lied</button><button data-t="ler">Lernen</button><button data-t="pro">Fortschritt</button></nav>
+<nav><button data-t="hm" class="on"><b>🏠</b>Heute</button><button data-t="ueb"><b>🎯</b>Üben</button><button data-t="live"><b>🎤</b>Live</button><button data-t="ler"><b>📚</b>Lernen</button><button data-t="pro"><b>📈</b>Erfolge</button></nav>
 
-<section class="tab on" id="live">
+<section class="tab on" id="hm"><div class="card"><div class="m">Dein Level</div><div id="lvl" style="display:flex;gap:6px;margin:6px 0"></div><div id="lvd" class="m" style="text-transform:none"></div></div><div class="card" id="tip"></div></section>
+<section class="tab" id="live">
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span id="vc">○ STILL</span><span class="m">Pitch · Formanten</span></div>
 <div class="g" style="margin-top:8px"><span class="m">F0</span><span id="f0">–<small> Hz</small></span>
 <span class="m">Cent</span><div class="cb"><i id="mk"></i></div>
 <span class="m">F1</span><span class="v" id="f1">–</span><span class="m">F2</span><span class="v" id="f2">–</span><span class="m">F3</span><span class="v" id="f3">–</span>
 <span class="m">Level</span><span class="v" id="lv">–</span><span class="m">Vokal</span><span id="vw">–</span></div>
 <p class="m" style="margin:8px 0 0;text-transform:none">Formanten sind eine Schätzung (bei hohen Tönen ungenau). Vokal = nächstliegender deutscher Vokal.</p></div>
+<div class="card"><div class="m" style="margin-bottom:4px">Vokal-Landkarte (F1 × F2): wo klingt dein Vokal?</div><canvas id="vm" style="height:170px"></canvas></div>
 <div class="card"><div class="m" style="margin-bottom:4px">Stimmlippen · Draufsicht (verlangsamt)</div><canvas id="folds" style="height:190px"></canvas><div class="m" style="margin:6px 0 2px">Glottis-Öffnung über einen Zyklus</div><canvas id="glot" style="height:60px"></canvas></div>
 </section>
 
 <section class="tab" id="ueb">
 <div class="card"><div class="m">Stimmumfang (bequem, ohne Pressen)</div><div id="rgv" class="v" style="margin:4px 0">noch nicht gemessen</div><button id="rgb">Umfang messen (20 Sek.)</button></div>
 <div class="card"><div class="m">Tagesroutine · ca. 12 Min</div><div id="rtc" style="margin:6px 0">Aufwärmen → Tonhalten → Leiter → Range-Leiter → Beweglichkeit → Abkühlen</div><button class="pri" id="rtb">▶ Routine starten</button></div>
-<div class="card"><div class="m">Startton (bequem wählen, Oktave egal)</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px"><select id="root"></select><label><input type="checkbox" id="tone" checked> Ton vorspielen</label></div>
+<div class="card"><div class="m">Startton (bequem wählen, Oktave egal)</div><div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:6px"><select id="root"></select><label><input type="checkbox" id="tone" checked> Ton vorspielen</label><label><input type="checkbox" id="sus"> durchgehend (nur mit Kopfhörer)</label></div>
 <p class="m" style="text-transform:none;margin:8px 0 0">Tipp: Kopfhörer nutzen, damit der Vorspielton nicht ins Mikro geht.</p></div>
-<div class="card" id="exl"></div><div id="res"></div>
+<div class="card" id="wol"></div><div class="card" id="exl"></div><div id="res"></div>
 </section>
 
 <section class="tab" id="lied">
@@ -131,7 +133,7 @@ an.getFloatTimeDomainData(buf);const r=pitch(buf,ac.sampleRate),m=r.f?f2m(r.f):n
 hist.push({t:now,m});while(hist[0]&&now-hist[0].t>6200)hist.shift();
 if(m===null)fm=[0,0,0];else if(++fr%3==0){const p=formants(buf,ac.sampleRate);if(p)p.forEach((v,i)=>fm[i]=fm[i]?fm[i]*.7+v*.3:v)}
 if(rg)rgStep(now,m);else if(ex)exStep(now,m);else phrase(m,db,now);
-ph=(ph+dt*(r.f||0)/40)%1;folds(r.f,m===null?.55:gf(ph));glot(m===null?null:ph);ui(m,db,now);draw(now);requestAnimationFrame(loop)}
+ph=(ph+dt*(r.f||0)/40)%1;folds(r.f,m===null?.55:gf(ph));glot(m===null?null:ph);vmap();ui(m,db,now);draw(now);requestAnimationFrame(loop)}
 
 let ps=null,lastV=0,mute=0,flog=[];
 function phrase(m,db,now){if('speechSynthesis' in window&&(speechSynthesis.speaking||now<mute)){ps=null;return}
@@ -183,8 +185,8 @@ else for(let i=0;i<4;i++)setTimeout(()=>beep(i?660:880,.12),i*spb);
 const t0=now+lead+250,steps=nt.map(n=>({m:n.m+tr,ts:t0+n.b0*spb,te:t0+(n.b0+n.b)*spb-30,fr:0,tot:0,vn:0,es:0}));
 let lo=Math.min(...steps.map(s=>s.m))-4,hi=Math.max(...steps.map(s=>s.m))+4;if(hi-lo<14){const c=(hi+lo)/2;lo=c-7;hi=c+7}
 ex={n:'Lied',steps,lo,hi,mid:(lo+hi)/2,t0,end:steps[steps.length-1].te+300,q:1,song:1};$('#lres').innerHTML='';window.scrollTo({top:0,behavior:'smooth'})}
-function songRes(st){const w=st.map((s,i)=>({i,s,e:s.vn?s.es/s.vn:0})).filter(x=>x.s.sc<.5).sort((a,b)=>a.s.sc-b.s.sc).slice(0,5);
-return '<div style="display:flex;flex-wrap:wrap;gap:3px;margin:6px 0">'+st.map(s=>`<span style="padding:2px 5px;border-radius:5px;font-size:11px;color:#fff;background:${s.sc>.7?'var(--ok)':s.sc>.4?'var(--warn)':'var(--bad)'}">${nm(s.m)}</span>`).join('')+'</div>'+(w.length?'<p><b>Schwächste Stellen:</b></p>'+w.map(x=>`<p style="margin:2px 0">Ton ${x.i+1} (${nm(x.s.m)}): ${Math.round(x.s.sc*100)}% – ${x.s.vn<3?'kaum gesungen':x.e>15?'zu hoch (+'+Math.round(x.e)+' ct)':x.e<-15?'zu tief ('+Math.round(x.e)+' ct)':'Treffer schwankt'}</p>`).join(''):'<p>Keine auffälligen Schwachstellen.</p>')}
+function songRes(st){const w=st.map((s,i)=>({i,s,e:s.vn?s.es/s.vn:0})).filter(x=>x.s.sc<.5&&!x.s.rest).sort((a,b)=>a.s.sc-b.s.sc).slice(0,5);
+return '<div style="display:flex;flex-wrap:wrap;gap:3px;margin:6px 0">'+st.map(s=>`<span style="padding:2px 5px;border-radius:5px;font-size:11px;color:#fff;background:${s.sc>.7?'var(--ok)':s.sc>.4?'var(--warn)':'var(--bad)'}">${s.rest?'·':nm(s.m)}</span>`).join('')+'</div>'+(w.length?'<p><b>Schwächste Stellen:</b></p>'+w.map(x=>`<p style="margin:2px 0">Ton ${x.i+1} (${nm(x.s.m)}): ${Math.round(x.s.sc*100)}% – ${x.s.vn<3?'kaum gesungen':x.e>15?'zu hoch (+'+Math.round(x.e)+' ct)':x.e<-15?'zu tief ('+Math.round(x.e)+' ct)':'Treffer schwankt'}</p>`).join(''):'<p>Keine auffälligen Schwachstellen.</p>')}
 function vibAdv(adv){const v=ex.vb||[];adv.length=0;if(v.length<40){adv.push('Zu wenig Ton gemessen ('+v.length+' Messpunkte): halte den Ton länger und etwas lauter.');return}
 const mm=v.map(x=>x[1]),n=mm.length,mu=mm.reduce((a,b)=>a+b,0)/n,r=mm.map(x=>(x-mu)*100),sm=r.map((x,i)=>(r[Math.max(0,i-1)]+x+r[Math.min(n-1,i+1)])/3);
 let z=0;for(let i=1;i<n;i++)if(sm[i]*sm[i-1]<0)z++;const T=(v[n-1][0]-v[0][0])/1000,rate=z/2/T,depth=Math.round(Math.sqrt(sm.reduce((a,b)=>a+b*b,0)/n)*1.414);
@@ -210,7 +212,7 @@ const pv=RG;RG={lo:L,hi:H,d:new Date().toISOString().slice(0,10)};try{localStora
 $('#coach').textContent='Gemessen: '+nm(L)+' – '+nm(H)+(pv?' (vorher '+nm(pv.lo)+' – '+nm(pv.hi)+', Differenz '+((H-L)-(pv.hi-pv.lo))+' Halbtöne)':'')+'. Messe nur alle 1–2 Wochen neu, Umfang wächst langsam.'}
 const rtRoot=()=>RG?Math.max(RG.lo,Math.min(RG.lo+Math.round((RG.hi-RG.lo)*.3),RG.hi-12)):+$('#root').value;
 const ROUT=[
-{t:'Atem & Haltung',s:60,x:'Stell dich aufrecht hin, Füße hüftbreit, Schultern locker. Atme 4 Sek. durch die Nase tief in die Flanken, dann 10 Sek. gleichmäßig auf „Sss“ aus. 4× wiederholen.'},
+{t:'Atem & Haltung',a:1,s:60,x:'Stell dich aufrecht hin, Füße hüftbreit, Schultern locker. Atme 4 Sek. durch die Nase tief in die Flanken, dann 10 Sek. gleichmäßig auf „Sss“ aus. 4× wiederholen.'},
 {t:'Lippenflattern + Sirene',s:90,x:'Lippen locker flattern lassen und dabei sanft von tief nach hoch und zurück gleiten. Kein Druck, Kiefer entspannt. Schau, ob die Linie oben glatt gleitet.'},
 {t:'Summen auf „Mm“: Ton halten',e:0},
 {t:'5-Ton-Leiter',e:3},
@@ -221,7 +223,7 @@ const ROUT=[
 function rtNext(){if(!rt)rt={i:-1};if(rt.tm)clearInterval(rt.tm);rt.i++;const s=ROUT[rt.i];
 if(!s){rt=null;ex=null;$('#rtc').innerHTML='<b>Routine fertig!</b> Trink Wasser. Bei Heiserkeit, Kratzen oder Druck im Hals: Pause machen.';$('#rtb').textContent='▶ Routine neu starten';return}
 $('#rtb').textContent='Weiter ▶';const h='<b>'+(rt.i+1)+'/'+ROUT.length+' · '+s.t+'</b>';
-if(s.x){let left=s.s;$('#rtc').innerHTML=h+'<p>'+s.x+'</p><div id="rtt" class="v">'+left+' s</div>';rt.tm=setInterval(()=>{left--;const el=$('#rtt');if(el)el.textContent=left>0?left+' s':'Zeit um – weiter!';if(left<=0)clearInterval(rt.tm)},1000)}
+if(s.x){let left=s.s;$('#rtc').innerHTML=h+'<p>'+s.x+'</p>'+(s.a?'<div class="br"></div>':'')+'<div id="rtt" class="v">'+left+' s</div>';rt.tm=setInterval(()=>{left--;const el=$('#rtt');if(el)el.textContent=left>0?left+' s':'Zeit um – weiter!';if(left<=0)clearInterval(rt.tm)},1000)}
 else if(s.e==='rng'){if(!RG){$('#rtc').innerHTML=h+'<p>Für die Range-Leiter brauche ich deinen Umfang: tippe oben auf „Umfang messen“, dann geht es hier weiter.</p>';return}
 const st=[];for(let r=RG.lo;r<=RG.hi-4;r+=2)[0,2,4,2,0].forEach(o=>st.push([r-RG.lo+o,.7]));$('#rtc').innerHTML=h+'<p>Folge den Balken oben. Die Leiter steigt in kleinen Schritten bis an dein oberes Ende. Wird es eng oder drückt es: sofort stoppen, nicht durchdrücken.</p>';startEx(0,RG.lo,{n:'Range-Leiter',q:1,s:st})}
 else{$('#rtc').innerHTML=h+'<p>'+EX[s.e].d+' Folge den Balken oben.</p>';startEx(s.e,rtRoot())}}
@@ -234,7 +236,7 @@ if(now-lastTxt>250){lastTxt=now;coachTxt(m,db,now)}}
 
 function coachTxt(m,db,now){if(rg){$('#coach').textContent=rg.msg;return}let t;
 if(ex){if(now<ex.t0)t='Gleich geht\'s los – atme tief in die Flanken ein, Schultern locker.';else{const s=cur(now);if(!s)return;
- if(m===null)t='Ziel '+nm(s.m)+' – sing los, ich höre noch keinen klaren Ton.';else{const d=fold(m,s.m)*100;t=Math.abs(d)<25?'✔ '+nm(s.m)+' sitzt!':d>0?'Ziel '+nm(s.m)+': '+Math.round(d)+' ct zu hoch – lockerer, weniger Druck.':'Ziel '+nm(s.m)+': '+Math.round(-d)+' ct zu tief – mehr Atemfluss, Ton sanft anheben.'}}}
+ if(s.rest)t=m===null?'✔ Pause: ruhig atmen, gleich geht es weiter.':'Pause! Hier nicht singen, Atem holen.';else if(m===null)t='Ziel '+nm(s.m)+' – sing los, ich höre noch keinen klaren Ton.';else{const d=fold(m,s.m)*100;t=Math.abs(d)<25?'✔ '+nm(s.m)+' sitzt!':d>0?'Ziel '+nm(s.m)+': '+Math.round(d)+' ct zu hoch – lockerer, weniger Druck.':'Ziel '+nm(s.m)+': '+Math.round(-d)+' ct zu tief – mehr Atemfluss, Ton sanft anheben.'}}}
 else if(m===null)t=db>-50?'Ich höre Geräusch, aber keinen klaren Ton. Sing auf „Mm“ oder „Na“.':'Sing einen Ton – ich höre live zu.';
 else{const p=hist.filter(h=>h.m!==null&&now-h.t<500).map(h=>h.m),mu=p.reduce((a,b)=>a+b,0)/p.length,sd=Math.sqrt(p.reduce((a,b)=>a+(b-mu)**2,0)/p.length)*100,ct=(m-Math.round(m))*100;
  t=db<-45?'Sehr leise: mehr Atemfluss, aber nicht pressen.':sd>50?'Der Ton wackelt stark – weniger drücken, gleichmäßig ausatmen.':Math.abs(ct)>25?(ct>0?'Etwas zu hoch zur nächsten Note – entspannen.':'Etwas zu tief zur nächsten Note – mehr Luftfluss.'):sd<20?'Ruhig und sauber – so soll sich ein stabiler Ton anfühlen.':'Gut – halte den Ton weiter ruhig.'}
@@ -247,14 +249,15 @@ for(let n=Math.ceil(lo);n<=Math.floor(hi);n++){const y=Y(n),pc=(n%12+12)%12,bk=[
  x.strokeStyle=K.ln;x.beginPath();x.moveTo(0,y-ry/2);x.lineTo(w,y-ry/2);x.stroke();
  if(!bk){x.font=(pc?'10px':'bold 11px')+' ui-monospace,Menlo,monospace';x.fillStyle=pc?K.mu:K.tx;x.fillText(nm(n),4,y+4)}}
 const nx=w*.7,pp=(nx-44)/6000;
-if(ex){for(const s of ex.steps){const x1=nx+(s.ts-now)*pp,x2=nx+(s.te-now)*pp;if(x2<44||x1>w)continue;
- x.globalAlpha=s.done?.8:.35;x.fillStyle=s.done?(s.sc>.7?K.ok:s.sc>.4?K.warn:K.bad):K.ac;x.fillRect(Math.max(44,x1),Y(s.m)-ry*.4,x2-Math.max(44,x1)-2,ry*.8);x.globalAlpha=1}
+const lm0=hist.length?hist[hist.length-1].m:null,cs0=ex&&!ex.pv&&cur(now),LH=!!(cs0&&!cs0.rest&&lm0!==null&&Math.abs(fold(lm0,cs0.m))<(ex.tol||.4));
+if(ex){for(const s of ex.steps){const x1=nx+(s.ts-now)*pp,x2=nx+(s.te-now)*pp;if(x2<44||x1>w)continue;if(s.rest){x.globalAlpha=.25;x.fillStyle=K.mu;x.fillRect(Math.max(44,x1),h-6,x2-Math.max(44,x1)-2,4);x.globalAlpha=1;continue}
+ const lv=!s.done&&now>=s.ts&&now<s.te;x.globalAlpha=s.done?.8:lv?.65:.35;x.fillStyle=s.done?(s.sc>.7?K.ok:s.sc>.4?K.warn:K.bad):lv&&LH?K.ok:K.ac;x.fillRect(Math.max(44,x1),Y(s.m)-ry*.4,x2-Math.max(44,x1)-2,ry*.8);x.globalAlpha=1}
  if(now<ex.t0){x.fillStyle=K.tx;x.font='bold 14px sans-serif';x.fillText('Gleich…',nx-20,18)}}
 x.setLineDash([4,4]);x.strokeStyle=K.mu;x.beginPath();x.moveTo(nx,0);x.lineTo(nx,h);x.stroke();x.setLineDash([]);
 x.strokeStyle=K.gold;x.lineWidth=3;x.lineCap='round';x.lineJoin='round';let pen=false,lx,ly;
 for(const p of hist){if(p.m===null){pen=false;continue}const m=ex?p.m+12*Math.round((ex.mid-p.m)/12):p.m,px=nx-(now-p.t)*pp,py=Y(m);
  if(px<44){pen=false;continue}if(pen){x.beginPath();x.moveTo(lx,ly);x.lineTo(px,py);x.stroke()}pen=true;lx=px;ly=py}
-if(pen){x.fillStyle=K.gold;x.beginPath();x.arc(lx,ly,5,0,7);x.fill()}x.lineWidth=1;
+if(pen){x.fillStyle=LH?K.ok:K.gold;x.beginPath();x.arc(lx,ly,5,0,7);x.fill()}x.lineWidth=1;if(LH){x.fillStyle=K.ok;x.font='bold 13px sans-serif';x.fillText('✔ getroffen',48,16)}
 const lp=hist[hist.length-1];if(lp&&lp.m!==null){const n=Math.round(lp.m),ct=Math.round((lp.m-n)*100);x.fillStyle=K.gold;x.font='bold 22px ui-monospace,Menlo,monospace';x.fillText(nm(n),nx+10,26);x.font='11px ui-monospace,Menlo,monospace';x.fillStyle=K.mu;x.fillText((ct>0?'+':'')+ct+' ct · '+Math.round(m2f(lp.m))+' Hz',nx+10,42)}}
 
 function folds(f0,g){const[x,w,h]=sz($('#folds')),cx=w/2,cy=h/2,R=Math.min(w,h)*.46;
@@ -279,30 +282,44 @@ const EX=[
 {n:'Riff: Pentatonik',d:'Typisches Pop/Soul-Riff: jeden Ton sauber ansetzen, nicht verschleifen.',q:1,s:[0,3,5,3,7,5,3,0].map(o=>[o,.7])},
 {n:'Vibrato-Wippe (langsam)',d:'Pendeln zwischen zwei Tönen, ca. 3× pro Sekunde: Gefühl für den Puls.',q:1,s:[0,1,0,1,0,1,0,1,0,1,0,1].map(o=>[o,.35])},
 {n:'Vibrato-Test',d:'Einen Ton 7 Sek. halten und Vibrato zulassen. Ich messe Tempo und Breite.',v:1,s:[[0,7]]}];
+const BT=.8,tr=(p,k)=>p.map(([o,b])=>[o===null?null:o+k,b]),sk=(p,ks)=>ks.flatMap(k=>tr(p,k)),sc=a=>a.map(([o,b])=>[o,b*BT]),AR=[[0,1],[4,1],[7,1],[12,1],[7,1],[4,1],[0,1],[null,1]],SC=[0,2,4,5,7,9,11,12,11,9,7,5,4,2,0].map(o=>[o,1]);
+const WO=[
+{n:'Arpeggio-Reise',f:'Tonalität · Ausdauer',d:'Dur-Dreiklang rauf und runter (1-3-5-8-5-3-1), dann jeweils einen Halbton höher und wieder zurück. 9 Durchgänge, ca. 1 Min.',s:sc(sk(AR,[0,1,2,3,4,3,2,1,0]))},
+{n:'Dur ↔ Moll',f:'Tonalität · Intonation',d:'Dur-Terz und Moll-Terz im Wechsel in 3 Tonarten. Der Unterschied ist nur ein Halbton: trainiert dein Gehör.',s:sc(sk([[0,1],[4,1],[7,1],[4,1],[0,1],[null,1],[0,1],[3,1],[7,1],[3,1],[0,1],[null,1]],[0,2,4]))},
+{n:'Intervall-Zirkel',f:'Intonation',d:'Immer zurück zum Grundton: Sekunde, Terz, Quarte, Quinte, Sexte. Hör den Zielton vorher innerlich.',s:sc([2,4,5,7,9].flatMap(k=>[[0,2],[k,2],[null,1]]))},
+{n:'Halbton-Leiter',f:'Intonation',d:'Jeder Halbton einzeln, aufwärts und abwärts. Die Feinschliff-Übung für Treffsicherheit.',s:sc([...Array(13).keys(),...[...Array(12).keys()].map(i=>11-i)].map(o=>[o,1]))},
+{n:'Atem-Treppe',f:'Ausdauer',d:'Töne 4, 6, 8 und 10 Schläge halten. Gleichmäßig ausatmen, nicht drücken. Zeigt, wie weit dein Atem trägt.',s:sc([[0,4],[null,2],[2,6],[null,2],[4,8],[null,2],[2,10]])},
+{n:'Ausdauer-Leiter',f:'Ausdauer · Tonalität',d:'Dur-Tonleiter eine Oktave auf und ab, 3 Tonarten hintereinander (ca. 1,5 Min).',s:sc(sk(SC.concat([[null,2]]),[0,1,2]))},
+{n:'Rhythmus 1: Viertel & Achtel',f:'Rhythmik',d:'Ein Ton im Takt, ein Klick zählt mit (Kopfhörer). Viertel, Achtel, Punktierte, dazu Pausen: dort schweigen!',met:BT,q:1,s:sc([].concat(...[0,1].map(()=>[[0,1],[0,1],[0,1],[null,1]]),...[0,1].map(()=>[[0,.5],[0,.5],[0,.5],[0,.5],[0,1],[null,1]]),...[0,1].map(()=>[[0,1.5],[0,.5],[0,1],[null,1]])))},
+{n:'Rhythmus 2: Synkopen',f:'Rhythmik',d:'Einsätze auf dem Off-Beat, dann Rhythmus mit wechselnden Tönen. Die Pause vor dem Einsatz ist der Trick.',met:BT,q:1,s:sc([].concat(...[0,1,2].map(()=>[[null,.5],[0,1],[0,1],[0,1],[null,.5]]),...[0,1].map(()=>[[0,.5],[2,.5],[4,1],[null,1],[4,.5],[2,.5],[0,1],[null,1]])))},
+{n:'Agilitäts-Zirkel',f:'Agilität',d:'Runs, Terzenkette und Melisma in einem Durchgang (ca. 40 Sek.). Erst langsam sauber, dann Level hochstellen.',q:1,s:sc([...sk([0,2,4,5,7,5,4,2].map(o=>[o,.5]),[0,2,4]),[null,1],...sk([0,4,2,5,4,7,5,9,7,11,9,12].map(o=>[o,.5]),[0,1]),[null,1],...sk([[0,.5],[2,.5],[4,.5],[2,.5],[0,1],[null,.5]],[0,1,2,3,4])])},
+{n:'Vibrato-Treppe',f:'Vibrato',d:'Pendeln zwischen zwei Tönen, erst langsamer, dann schneller. Echtes Vibrato ist schneller und kleiner: Danach lässt du das Pendeln im gehaltenen Ton „kleiner“ werden.',q:1,s:sc([].concat(...[.5,.4,.3].map(b=>[...Array(8).keys()].map(i=>[i%2,b]).concat([[null,1]]))))}
+];
+$('#wol').innerHTML='<div class="m">Workouts: längere Abfolgen</div><p class="m" style="text-transform:none;margin:4px 0 8px">Arpeggio = die Töne eines Akkords nacheinander (z. B. C–E–G). Du siehst jeden Ton kommen, hörst ihn mit (👂 = nur zuhören) und siehst live, ob du triffst: Balken und Punkt werden grün.</p>'+WO.map((e,i)=>`<div class="ex"><div><b>${e.n}</b> <span class="m" style="text-transform:none">· ${e.f}</span><p>${e.d}</p></div><div style="display:flex;gap:6px"><button onclick="startEx(0,null,WO[${i}],1)">👂</button><button onclick="startEx(0,null,WO[${i}])">Start</button></div></div>`).join('');
 const WARM=[['Warm-up: Lippenflattern + Sirene','2 Min: Lippen flattern lassen und dabei sanft von tief nach hoch und zurück gleiten. Schau im Piano-Roll, ob die Linie glatt gleitet.'],['Summen auf „Mm“','1 Min: bequemer Ton, Lippen locker, Kiefer entspannt. Spüre Vibration an Lippen/Nase.'],['Vokalwechsel auf einem Ton','Einen Ton halten und langsam „i – e – a – o – u“. Beobachte F1/F2 im Live-Tab: die Werte ändern sich, der Ton bleibt gleich.']];
 $('#root').innerHTML=Array.from({length:25},(_,i)=>43+i).map(n=>`<option value="${n}"${n==57?' selected':''}>${nm(n)}</option>`).join('');
-$('#exl').innerHTML='<div class="m">Zieltöne – Live-Bewertung</div>'+EX.map((e,i)=>`<div class="ex"><div><b>${e.n}</b><p>${e.d}</p></div><button onclick="startEx(${i})">Start</button></div>`).join('')+'<div class="m" style="margin-top:12px">Freie Aufwärm-Übungen</div>'+WARM.map(w=>`<div class="ex"><div><b>${w[0]}</b><p>${w[1]}</p></div></div>`).join('');
+$('#exl').innerHTML='<div class="m">Zieltöne – Live-Bewertung</div>'+EX.map((e,i)=>`<div class="ex"><div><b>${e.n}</b><p>${e.d}</p></div><div style="display:flex;gap:6px"><button onclick="startEx(${i},null,null,1)">👂</button><button onclick="startEx(${i})">Start</button></div></div>`).join('')+'<div class="m" style="margin-top:12px">Freie Aufwärm-Übungen</div>'+WARM.map(w=>`<div class="ex"><div><b>${w[0]}</b><p>${w[1]}</p></div></div>`).join('');
 
-async function startEx(i,ro,cu){if(!run)await mic();if(!run)return;const e=cu||EX[i],root=ro!=null?ro:+$('#root').value,now=performance.now();let t=now+1800;
-const steps=e.s.map(([o,d])=>{const s={m:root+o,ts:t,te:t+d*1000,fr:0,tot:0,vn:0,es:0};t+=d*1000;return s});
-let lo=Math.min(...steps.map(s=>s.m))-4,hi=Math.max(...steps.map(s=>s.m))+4;if(hi-lo<14){const c=(hi+lo)/2;lo=c-7;hi=c+7}
-ex={n:e.n,steps,lo,hi,mid:(lo+hi)/2,t0:now+1800,end:t+300,q:e.q,v:e.v};if(e.q||e.v)beep(m2f(root),1.2);$('#res').innerHTML='';window.scrollTo({top:0,behavior:'smooth'})}
+async function startEx(i,ro,cu,pv){if(!run)await mic();if(!run)return;const e=cu||EX[i],root=ro!=null?ro:+$('#root').value,now=performance.now();let t=now+1800;
+const K=e.v?1:LV[lvl].k,steps=e.s.map(([o,d])=>{const s={m:o===null?null:root+o,rest:o===null,ts:t,te:t+d*1000*K,fr:0,tot:0,vn:0,es:0};t+=d*1000*K;return s});
+const ms=steps.filter(s=>!s.rest).map(s=>s.m);let lo=Math.min(...ms)-4,hi=Math.max(...ms)+4;if(hi-lo<14){const c=(hi+lo)/2;lo=c-7;hi=c+7}
+ex={n:e.n,steps,lo,hi,mid:(lo+hi)/2,t0:now+1800,end:t+300,q:e.q,v:e.v,pv:pv,tol:e.v?.9:LV[lvl].t+(e.q?.1:0)};if(e.q||e.v)beep(m2f(root),1.2);$('#res').innerHTML='';if(e.met&&!pv){const bt=e.met*1000*K,n=Math.floor((t-now-1800)/bt);for(let i=0;i<n;i++)setTimeout(()=>{if(ex)beep(i%4?700:1000,.05)},1800+i*bt)}}
 const cur=now=>ex.steps.find(s=>now>=s.ts&&now<s.te);
-function exStep(now,m){const tn=$('#tone').checked&&!ex.q&&!ex.v;for(const s of ex.steps){if(now>=s.ts&&now<s.te){if(!s.pl){s.pl=1;if(tn)beep(m2f(s.m),.9)}
+function exStep(now,m){const su=$('#sus').checked,tn=ex.pv||($('#tone').checked&&!ex.v&&(!ex.q||su));for(const s of ex.steps){if(now>=s.ts&&now<s.te){if(!s.pl){s.pl=1;if(tn&&!s.rest)beep(m2f(s.m),su||ex.pv?Math.min(4,(s.te-s.ts)/1000):.9,su||ex.pv)}
  if(ex.v&&m!==null&&now>s.ts+800)(ex.vb=ex.vb||[]).push([now,m]);
- if(now>s.ts+(ex.q?Math.min(200,(s.te-s.ts)*.35):tn?1100:500)){s.tot++;if(m!==null){const d=fold(m,s.m);s.vn++;s.es+=d*100;if(Math.abs(d)<(ex.v?.9:ex.q?.5:.4))s.fr++}}}
+ if(!ex.pv&&now>s.ts+(s.rest?150:ex.q?Math.min(200,(s.te-s.ts)*.35):tn?(su?450:1100):500)){s.tot++;if(s.rest){if(m===null)s.fr++}else if(m!==null){const d=fold(m,s.m);s.vn++;s.es+=d*100;if(Math.abs(d)<(ex.tol||(ex.q?.5:.4)))s.fr++}}}
  else if(now>=s.te&&!s.done&&s.pl){s.done=1;s.sc=s.tot?s.fr/s.tot:0}}
 if(now>ex.end)finish()}
-function finish(){if(bk&&ex.song)bk.pause();const st=ex.steps;st.forEach(s=>{if(s.sc===undefined)s.sc=s.tot?s.fr/s.tot:0;s.done=1});
+function finish(){if(ex.pv){ex=null;$('#coach').textContent='Jetzt du: tippe auf Start.';return}if(bk&&ex.song)bk.pause();const st=ex.steps;st.forEach(s=>{if(s.sc===undefined)s.sc=s.tot?s.fr/s.tot:0;s.done=1});
 const avg=Math.round(100*st.reduce((a,s)=>a+s.sc,0)/st.length),vn=st.reduce((a,s)=>a+s.vn,0),bias=vn?Math.round(st.reduce((a,s)=>a+s.es,0)/vn):0;
 const adv=[avg>=80?'Stark! Nächstes Mal: anderer Startton oder eine schwerere Übung.':avg>=50?'Gute Basis. Wiederhole mit Kopfhörern; summ jeden Ton erst auf „Mm“, dann öffne auf „Na“.':'Das ist Training, kein Urteil: Spiel den Ton mehrfach vor, summ ihn erst leise und achte auf lockeren Kiefer.'];
 if(bias>20)adv.push('Du singst im Schnitt zu hoch (+'+bias+' ct): meist Druck im Hals. Gähnraum, weicher Einsatz, weniger Kraft.');
 if(bias<-20)adv.push('Du singst im Schnitt zu tief ('+bias+' ct): meist zu wenig Atemfluss/Stütze. Aufrecht, Rippen weit, Ton „nach vorn“ denken.');
-if(ex.v)vibAdv(adv);const bad=[...new Set(st.filter(s=>s.sc<.4).map(s=>nm(s.m)))];if(bad.length)adv.push('Schwierig waren: '+bad.join(', ')+'. Übe genau diese Töne einzeln mit „Ton halten“.');
-$(ex.song?'#lres':'#res').innerHTML=`<div class="card"><b>${ex.n}: ${avg}% getroffen</b><div class="m" style="margin:6px 0">Treffer = innerhalb ±40 ct, Oktave egal</div>`+(ex.song?songRes(st):'')+(ex.song?[]:st).map(s=>`<div class="bar"><i style="width:${Math.round(s.sc*100)}%;background:${s.sc>.7?'var(--ok)':s.sc>.4?'var(--warn)':'var(--bad)'}"></i><span>${nm(s.m)} · ${Math.round(s.sc*100)}%</span></div>`).join('')+adv.map(a=>`<p>${a}</p>`).join('')+'</div>';
-save({d:new Date().toISOString().slice(0,10),n:ex.n,s:avg,b:bias});$('#coach').textContent='Fertig: '+avg+'% – Details unter „Üben“.';ex=null;prog();if(rt)$('#rtc').insertAdjacentHTML('beforeend','<br>✔ Fertig – tippe auf „Weiter“.')}
+if(ex.v)vibAdv(adv);const bad=[...new Set(st.filter(s=>s.sc<.4).map(s=>s.rest?'Pause':nm(s.m)))];if(bad.length)adv.push('Schwierig waren: '+bad.join(', ')+'. Übe genau diese Töne einzeln mit „Ton halten“.');
+$(ex.song?'#lres':'#res').innerHTML=`<div class="card"><b>${ex.n}: ${avg}% getroffen</b><div class="m" style="margin:6px 0">Treffer = innerhalb ±40 ct, Oktave egal</div>`+((ex.song||st.length>12)?songRes(st):'')+((ex.song||st.length>12)?[]:st).map(s=>`<div class="bar"><i style="width:${Math.round(s.sc*100)}%;background:${s.sc>.7?'var(--ok)':s.sc>.4?'var(--warn)':'var(--bad)'}"></i><span>${s.rest?'Pause':nm(s.m)} · ${Math.round(s.sc*100)}%</span></div>`).join('')+adv.map(a=>`<p>${a}</p>`).join('')+'</div>';
+if(!ex.v)save({d:new Date().toISOString().slice(0,10),n:ex.n,s:avg,b:bias});$('#coach').textContent='Fertig: '+avg+'% – Details unter „Üben“.';ex=null;prog();if(rt)$('#rtc').insertAdjacentHTML('beforeend','<br>✔ '+avg+' % getroffen. '+adv[0]+'<br>Tippe auf „Weiter“.')}
 
-function beep(f,d){ac=ac||new AC();ac.resume();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.25,t+.03);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(t+d+.05)}
+function beep(f,d,sus){ac=ac||new AC();ac.resume();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(sus?.14:.25,t+.03);if(sus)g.gain.setValueAtTime(.14,Math.max(t+.04,t+d-.1));g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(t+d+.05)}
 const seq=(os,r=60,gap=.55)=>os.forEach((o,i)=>setTimeout(()=>beep(m2f(r+o),.6),i*gap*1000));
 
 const LS=()=>{try{return JSON.parse(localStorage.getItem('sc1')||'[]')}catch(e){return[]}};
@@ -312,12 +329,35 @@ const days=new Set(a.map(r=>r.d)).size,l=a.slice(-12),avg=x=>x.reduce((s,r)=>s+r
 const tr=a.length>=6?Math.round(avg(q)-avg(p.length?p:a.slice(0,-5))):null;
 el.innerHTML=`<b>${a.length} Übungen an ${days} Tagen</b><div class="bars" style="margin:10px 0">${l.map(r=>`<div style="height:${Math.max(3,r.s)}%" title="${r.n}"></div>`).join('')}</div><div class="m" style="text-transform:none">Letzte ${l.length} Ergebnisse in %. Bestwert: ${Math.max(...a.map(r=>r.s))}%.${tr!==null?' Trend: '+(tr>=0?'+':'')+tr+' Punkte.':''} Dranbleiben: lieber täglich 10 Min.</div>`}
 
+const LV=[{n:'Anfänger',k:1.4,t:.5,d:'Langsameres Tempo, ±50 ct Toleranz'},{n:'Fortgeschritten',k:1,t:.4,d:'Normales Tempo, ±40 ct Toleranz'},{n:'Profi',k:.8,t:.3,d:'Schneller, ±30 ct Toleranz'}];let lvl=0;try{lvl=+localStorage.getItem('sc_lv')||0}catch(e){}
+function setLv(i){lvl=i;try{localStorage.setItem('sc_lv',i)}catch(e){}showLv()}
+function showLv(){$('#lvl').innerHTML=LV.map((l,i)=>`<button style="flex:1;padding:9px 2px;${i==lvl?'background:var(--ac);color:#fff;border-color:transparent':''}" onclick="setLv(${i})">${l.n}</button>`).join('');$('#lvd').textContent=LV[lvl].d+'. Gilt für alle Übungen.'}
+const TIPS=['Anatomie: Deine Stimmlippen sind nur wenige Zentimeter lang und schwingen bei einem A (220 Hz) 220-mal pro Sekunde.','Anatomie: Das Zwerchfell ist dein Hauptatemmuskel. Beim Einatmen weiten sich Bauch und Flanken, nicht die Schultern.','Stimmpflege: Stimmlippen brauchen Flüssigkeit. Trinke über den Tag verteilt, nicht erst beim Singen.','Musiklehre: Ein Halbton hat 100 Cent. Eine Oktave hat 12 Halbtöne und die doppelte Frequenz (A3 = 220 Hz, A4 = 440 Hz).','Klang: F1 hängt vor allem an der Kieferöffnung, F2 an der Zungenposition. Das siehst du in der Vokal-Landkarte im Live-Tab.','Technik: Gähnraum hinten im Rachen macht den Klang voller und entlastet den Kehlkopf.','Technik: Beginne Töne weich statt mit hartem Knackser. Das schont die Stimmlippen und trifft den Ton sauberer.','Vibrato: Ein natürliches Vibrato schwingt etwa 5 bis 7 Mal pro Sekunde. Es entsteht aus Lockerheit, nicht aus Wackeln.','Lernen: Kurz und täglich schlägt lang und selten. 10 bis 15 Minuten reichen.','Musiklehre: Dur klingt hell (Ganz-Ganz-Halb-Ganz-Ganz-Ganz-Halb), Moll dunkler. Der Unterschied liegt vor allem in der Terz.','Stimme: Die Stimme hat Register (Brust, Kopf, Falsett). Der Übergang klingt am Anfang oft brüchig. Das ist normal und trainierbar.','Technik: Kehlkopf neutral halten. Er steigt bei Anspannung und beim Schlucken, beim freien Singen bleibt er ruhig.'];
+$('#tip').innerHTML='<div class="m">Wissen des Tages</div><p style="margin:6px 0 0">'+TIPS[new Date().getDate()%TIPS.length]+'</p>';
+function go(t){document.querySelectorAll('nav button,.tab').forEach(e=>e.classList.remove('on'));const b=document.querySelector('nav button[data-t="'+t+'"]');if(b)b.classList.add('on');$('#'+t).classList.add('on');window.scrollTo(0,0);if(t=='live'&&!run){folds(0,.55);glot(null)}}
+function streak(a){const ds=new Set(a.map(r=>r.d)),f=x=>x.toISOString().slice(0,10),d=new Date();if(!ds.has(f(d)))d.setDate(d.getDate()-1);let s=0;while(ds.has(f(d))){s++;d.setDate(d.getDate()-1)}return s}
+function prog(){const a=LS(),el=$('#pr');if(!a.length){el.innerHTML='Noch keine Übungen. Starte unter „Heute“ – hier siehst du ehrlich, wie du dich entwickelst.';return}
+const st=streak(a),best=Math.max(...a.map(r=>r.s)),l=a.slice(-14),by={};a.forEach(r=>by[r.n]=Math.max(by[r.n]||0,r.s));
+const bd=[['🎤','Erste Übung',1],['🔥','3 Tage in Folge',st>=3],['📅','7 Tage in Folge',st>=7],['🎯','80 % Treffer',best>=80],['💎','95 % Treffer',best>=95],['🧗','Umfang gemessen',!!RG],['🏅','25 Übungen',a.length>=25]];
+const q=a.slice(-5),p=a.slice(-10,-5),avg=x=>x.reduce((s,r)=>s+r.s,0)/x.length,tr=p.length?Math.round(avg(q)-avg(p)):null;
+el.innerHTML=`<div style="display:flex;gap:8px;text-align:center">${[[st,'Tage in Folge'],[a.length,'Übungen'],[best+'%','Bestwert']].map(x=>`<div style="flex:1"><div class="v" style="font-size:24px;color:var(--gold)">${x[0]}</div><div class="m">${x[1]}</div></div>`).join('')}</div><div class="bars" style="margin:12px 0">${l.map(r=>`<div style="height:${Math.max(3,r.s)}%" title="${r.n}"></div>`).join('')}</div><div class="m" style="text-transform:none">Letzte ${l.length} Ergebnisse in %${tr!==null?' · Trend: '+(tr>=0?'+':'')+tr+' Punkte':''}</div><p><b>Bestwerte</b><br>${Object.entries(by).map(x=>x[0]+': '+x[1]+'%').join(' · ')}</p>${RG?'<p><b>Umfang</b>: '+nm(RG.lo)+' – '+nm(RG.hi)+'</p>':''}<p><b>Abzeichen</b></p><div style="display:flex;flex-wrap:wrap;gap:6px">${bd.map(b=>`<span style="padding:4px 8px;border-radius:99px;border:1px solid var(--ln);${b[2]?'':'opacity:.35'}">${b[0]} ${b[1]}</span>`).join('')}</div>`}
+function vmap(){const[x,w,h]=sz($('#vm')),K=col(),X=f=>w-14-(f-700)/1800*(w-28),Y=f=>10+(f-200)/800*(h-20);
+x.font='bold 15px Georgia,serif';VW.forEach(v=>{x.fillStyle=K.mu;x.fillText(v[0],X(v[2])-5,Y(v[1])+5)});
+if(fm[0]&&fm[1]){x.fillStyle=K.gold;x.beginPath();x.arc(Math.max(8,Math.min(w-8,X(fm[1]))),Math.max(8,Math.min(h-8,Y(fm[0]))),8,0,7);x.fill()}
+x.fillStyle=K.mu;x.font='10px ui-monospace,Menlo,monospace';x.fillText('F2 ←',w-40,h-3);x.fillText('F1 ↓',4,12)}
+const AN=[['Zwerchfell','Dein Hauptatemmuskel unter der Lunge. Beim Einatmen senkt es sich, Bauch und Flanken weiten sich. Es steuert, wie gleichmäßig die Luft strömt.'],['Lunge','Dein Luftvorrat. Nicht mehr Luft macht den Ton besser, sondern ein gleichmäßiger Luftfluss.'],['Luftröhre','Verbindet Lunge und Kehlkopf. Die Luft strömt hier zu den Stimmlippen.'],['Kehlkopf','Gehäuse der Stimmlippen. Er steigt bei Anspannung und beim Schlucken. Beim Singen soll er möglichst locker und ruhig bleiben.'],['Stimmlippen','Zwei Schleimhautfalten, wenige Zentimeter lang. Sie schwingen bei A (220 Hz) 220-mal pro Sekunde. Höhe entsteht durch Spannung und Länge, Lautstärke durch Luftdruck. Darum: weich beginnen, nie pressen.'],['Rachen','Teil des Ansatzrohrs: formt den Klang. Weit und locker klingt die Stimme voller.'],['Zunge','Wichtigster Formgeber der Vokale (vor allem F2). Zungenwurzel locker lassen.'],['Gaumensegel','Hebt sich bei den meisten Vokalen. Bei „Mm“ und „Ng“ senkt es sich, die Luft geht durch die Nase.'],['Kiefer & Lippen','Der Kiefer öffnet den Mund (F1). Die Lippen runden oder spreizen sich, z. B. bei „u“ oder „i“.']];
+const AP=[[100,284],[55,250],[100,202],[130,150],[100,166],[100,118],[140,104],[125,80],[190,95]];
+function anat(i){$('#ant').innerHTML='<b>'+(i+1)+' · '+AN[i][0]+'</b><p style="margin:4px 0 0">'+AN[i][1]+'</p>'}
+$('#ler').insertAdjacentHTML('afterbegin',`<details open><summary>0 · Deine Stimme von innen</summary><p class="m" style="text-transform:none">Schematische Zeichnung, nicht maßstabsgetreu. Tippe auf die Punkte.</p><svg viewBox="0 0 260 310" style="width:100%;max-width:340px;color:var(--tx)" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="120" cy="70" rx="72" ry="62"/><path d="M165 80Q130 74 98 80"/><ellipse cx="140" cy="104" rx="32" ry="10" fill="#d98a9a" stroke="none"/><path d="M150 96H192"/><rect x="92" y="85" width="16" height="65"/><rect x="86" y="150" width="28" height="32"/><path d="M92 166H98M102 166H108" stroke="var(--gold)" stroke-width="3"/><rect x="94" y="182" width="12" height="40"/><ellipse cx="62" cy="255" rx="38" ry="40"/><ellipse cx="138" cy="255" rx="38" ry="40"/><path d="M15 296Q100 262 185 296" stroke="var(--gold)" stroke-width="3"/>${AP.map((p,i)=>`<g onclick="anat(${i})" style="cursor:pointer"><circle cx="${p[0]}" cy="${p[1]}" r="11" fill="var(--ac)" stroke="none"/><text x="${p[0]}" y="${p[1]+4}" text-anchor="middle" fill="#fff" stroke="none" font-size="12">${i+1}</text></g>`).join('')}</svg><div id="ant" style="min-height:4em">Tippe auf eine Nummer.</div></details>`);
+$('#hm').append($('#rtc').closest('.card'),$('#rgv').closest('.card'));$('#hm').insertBefore($('#tip'),$('#rgv').closest('.card'));
+$('#live').prepend($('#fb').closest('.card'));$('#live').append($('#fl'),$('#fi'));
+const lb=document.createElement('button');lb.className='pri';lb.textContent='🎵 Lied mitsingen (Karaoke)';lb.style.marginBottom='8px';lb.onclick=()=>go('lied');$('#ueb').prepend(lb);showLv();
 const WS={0:0,1:0,2:1,3:1,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6},KN='CDEFGAH';
 function key(s){beep(m2f(60+s),.9);const st=WS[s],y=70-(st-2)*5,sh=[1,3,6,8,10].includes(s);$('#kn').textContent=NN[s]+(sh?' (schwarze Taste = Halbton)':'');
 $('#staff').innerHTML=`<svg viewBox="0 0 200 100" style="width:100%;max-width:300px"><g stroke="currentColor" opacity=".6">${[30,40,50,60,70].map(v=>`<line x1="5" x2="195" y1="${v}" y2="${v}"/>`).join('')}${st==0?'<line x1="92" x2="128" y1="80" y2="80"/>':''}</g><text x="8" y="68" font-size="54" fill="currentColor">𝄞</text><ellipse cx="110" cy="${y}" rx="7" ry="5" fill="var(--gold)"/><line x1="117" x2="117" y1="${y}" y2="${y-26}" stroke="var(--gold)" stroke-width="1.5"/>${sh?`<text x="90" y="${y+4}" font-size="14" fill="var(--gold)">♯</text>`:''}</svg>`}
 $('#kb').innerHTML=[0,2,4,5,7,9,11].map((s,i)=>`<button class="w" style="left:${i*100/7}%;width:${100/7}%" onclick="key(${s})">${KN[i]}</button>`).join('')+[[1,0],[3,1],[6,3],[8,4],[10,5]].map(([s,i])=>`<button class="k" style="left:${(i+1)*100/7-4}%" onclick="key(${s})"></button>`).join('');
 $('#iv').innerHTML=[['Sekunde',2,'„Alle meine Entchen“ (C–D)'],['Große Terz',4,'Kuckucksruf (fallend)'],['Quarte',5,'„O Tannenbaum“'],['Quinte',7,'„Morgen kommt der Weihnachtsmann“'],['Oktave',12,'„Somewhere over the rainbow“']].map(([n,o,h])=>`<div class="ex"><div><b>${n}</b><p>${h}</p></div><button onclick="seq([0,${o}],60,.8)">▶</button></div>`).join('');
 
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.tab').forEach(e=>e.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');if(b.dataset.t=='live'){folds(0,.55);glot(null)}});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
 prog();draw(performance.now());folds(0,.55);glot(null);addEventListener('resize',()=>{if(!run){draw(performance.now());folds(0,.55);glot(null)}});
 </script></body></html>
